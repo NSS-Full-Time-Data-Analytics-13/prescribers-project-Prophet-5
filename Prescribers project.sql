@@ -71,11 +71,11 @@ GROUP BY specialty_description
 --Question 3a-- PIRFENIDONE
 SELECT 
 	generic_name,
-	total_drug_cost :: money
-FROM drug
-JOIN prescription USING (drug_name)
-GROUP BY generic_name, total_drug_cost
-ORDER BY total_drug_cost DESC
+	SUM(total_drug_cost) :: money AS total_cost
+FROM prescription
+JOIN drug USING (drug_name)
+GROUP BY generic_name
+ORDER BY total_cost DESC
 LIMIT 1;
 
 --Question 3b--PIRFENIDONE
@@ -84,8 +84,8 @@ SELECT
 	total_drug_cost :: money/365 AS daily_drug_cost 
 FROM drug
 JOIN prescription USING (drug_name)
-ORDER BY daily_drug_cost DESC
-LIMIT 1;
+ORDER BY daily_drug_cost DESC;
+
 
 --Question 4a --
 SELECT drug_name,CASE WHEN opioid_drug_flag ='Y' THEN 'Opioid'
@@ -174,7 +174,7 @@ SELECT npi,drug_name
 FROM prescriber
 CROSS JOIN drug
 WHERE specialty_description = 'Pain Management' 
-	AND nppes_provider_city = 'NASHVILLE' AND opioid_drug_flag ='Y'
+	AND nppes_provider_city = 'NASHVILLE' AND opioid_drug_flag ='Y';
 
 --Question 7b--
 SELECT prescriber.npi,drug.drug_name,SUM(total_claim_count) AS total_claim_count 
@@ -183,7 +183,7 @@ CROSS JOIN drug
 LEFT JOIN prescription USING(drug_name)
 WHERE specialty_description = 'Pain Management' 
 	AND nppes_provider_city = 'NASHVILLE' AND opioid_drug_flag ='Y'
-GROUP BY prescriber.npi, drug.drug_name
+GROUP BY prescriber.npi, drug.drug_name;
 
 --Question 7c--
 SELECT 
